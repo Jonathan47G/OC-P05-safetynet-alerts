@@ -1,0 +1,1 @@
+package com.safetyn.alerts.repository;
