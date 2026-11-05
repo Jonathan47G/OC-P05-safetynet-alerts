@@ -13,6 +13,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class JsonDataRepository implements DataRepository {
@@ -67,5 +68,50 @@ public class JsonDataRepository implements DataRepository {
     @Override
     public List<MedicalRecord> getMedicalRecords() {
         return data.getMedicalrecords();
+    }
+
+    @Override
+    public Person addPerson(Person person) {
+        data.getPersons().add(person);
+        return person;
+    }
+
+    @Override
+    public Optional<Person> updatePerson(Person updatedPerson) {
+
+        return data.getPersons()
+                .stream()
+                .filter(person ->
+                        person.getFirstName()
+                                .equalsIgnoreCase(updatedPerson.getFirstName())
+                                &&
+                                person.getLastName()
+                                        .equalsIgnoreCase(updatedPerson.getLastName())
+                )
+                .findFirst()
+                .map(person -> {
+
+                    person.setAddress(updatedPerson.getAddress());
+                    person.setCity(updatedPerson.getCity());
+                    person.setZip(updatedPerson.getZip());
+                    person.setPhone(updatedPerson.getPhone());
+                    person.setEmail(updatedPerson.getEmail());
+
+                    return person;
+                });
+    }
+
+    @Override
+    public boolean deletePerson(
+            String firstName,
+            String lastName
+    ) {
+
+        return data.getPersons()
+                .removeIf(person ->
+                        person.getFirstName().equalsIgnoreCase(firstName)
+                                &&
+                                person.getLastName().equalsIgnoreCase(lastName)
+                );
     }
 }

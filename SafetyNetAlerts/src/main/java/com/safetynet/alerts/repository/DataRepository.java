@@ -5,6 +5,7 @@ import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DataRepository {
 
@@ -13,4 +14,10 @@ public interface DataRepository {
     List<FireStation> getFirestations();
 
     List<MedicalRecord> getMedicalRecords();
+
+    Person addPerson(Person person);
+
+    Optional<Person> updatePerson(Person person);
+
+    boolean deletePerson(String firstName, String lastName);
 }
