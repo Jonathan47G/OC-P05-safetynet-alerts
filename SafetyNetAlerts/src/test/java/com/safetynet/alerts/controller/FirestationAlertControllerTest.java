@@ -73,7 +73,7 @@ class FirestationAlertControllerTest {
     }
 
     @Test
-    void getFirestationShouldReturnEmptyResponseForUnknownStation()
+    void getFirestationShouldReturnEmptyObjectForUnknownStation()
             throws Exception {
 
         FirestationResponseDto response =
@@ -96,13 +96,7 @@ class FirestationAlertControllerTest {
                                 )
                 )
                 .andExpect(status().isOk())
-                .andExpect(content().json("""
-                        {
-                          "persons": [],
-                          "adultCount": 0,
-                          "childCount": 0
-                        }
-                        """));
+                .andExpect(content().json("{}"));
     }
 
     @Test

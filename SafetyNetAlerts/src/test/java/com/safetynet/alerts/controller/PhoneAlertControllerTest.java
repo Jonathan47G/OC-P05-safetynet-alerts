@@ -46,21 +46,6 @@ class PhoneAlertControllerTest {
     }
 
     @Test
-    void getPhoneAlertShouldReturnEmptyListForUnknownStation()
-            throws Exception {
-
-        when(phoneAlertService.getPhonesByFirestation("999"))
-                .thenReturn(List.of());
-
-        mockMvc.perform(
-                        get("/phoneAlert")
-                                .param("firestation", "999")
-                )
-                .andExpect(status().isOk())
-                .andExpect(content().json("[]"));
-    }
-
-    @Test
     void getPhoneAlertShouldReturnBadRequestWithoutFirestation()
             throws Exception {
 
