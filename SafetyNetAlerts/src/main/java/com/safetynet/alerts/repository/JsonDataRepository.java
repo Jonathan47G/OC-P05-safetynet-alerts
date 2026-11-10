@@ -166,4 +166,65 @@ public class JsonDataRepository implements DataRepository {
                                 .equals(stationNumber)
                 );
     }
+
+    @Override
+    public MedicalRecord addMedicalRecord(
+            MedicalRecord medicalRecord
+    ) {
+        data.getMedicalrecords().add(medicalRecord);
+        return medicalRecord;
+    }
+
+    @Override
+    public Optional<MedicalRecord> updateMedicalRecord(
+            MedicalRecord updatedMedicalRecord
+    ) {
+
+        return data.getMedicalrecords()
+                .stream()
+                .filter(record ->
+                        record.getFirstName()
+                                .equalsIgnoreCase(
+                                        updatedMedicalRecord.getFirstName()
+                                )
+                                &&
+                                record.getLastName()
+                                        .equalsIgnoreCase(
+                                                updatedMedicalRecord.getLastName()
+                                        )
+                )
+                .findFirst()
+                .map(record -> {
+
+                    record.setBirthdate(
+                            updatedMedicalRecord.getBirthdate()
+                    );
+
+                    record.setMedications(
+                            updatedMedicalRecord.getMedications()
+                    );
+
+                    record.setAllergies(
+                            updatedMedicalRecord.getAllergies()
+                    );
+
+                    return record;
+                });
+    }
+
+    @Override
+    public boolean deleteMedicalRecord(
+            String firstName,
+            String lastName
+    ) {
+
+        return data.getMedicalrecords()
+                .removeIf(record ->
+                        record.getFirstName()
+                                .equalsIgnoreCase(firstName)
+                                &&
+                                record.getLastName()
+                                        .equalsIgnoreCase(lastName)
+                );
+    }
 }

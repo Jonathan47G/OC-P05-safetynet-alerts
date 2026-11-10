@@ -1,12 +1,14 @@
 package com.safetynet.alerts.repository;
 
 import com.safetynet.alerts.model.FireStation;
+import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -295,5 +297,162 @@ class JsonDataRepositoryTest {
         fireStation.setAddress(address);
         fireStation.setStation(station);
         return fireStation;
+    }
+
+    private MedicalRecord createMedicalRecord() {
+
+        MedicalRecord record = new MedicalRecord();
+
+        record.setFirstName("Jonathan");
+        record.setLastName("Test");
+        record.setBirthdate("01/01/1990");
+
+        record.setMedications(
+                List.of("testol:100mg")
+        );
+
+        record.setAllergies(
+                List.of("peanut")
+        );
+
+        return record;
+    }
+    @Test
+    void addMedicalRecordShouldAddRecord() {
+
+        MedicalRecord record =
+                createMedicalRecord();
+
+        int initialSize =
+                repository.getMedicalRecords().size();
+
+        MedicalRecord result =
+                repository.addMedicalRecord(record);
+
+        assertEquals(record, result);
+
+        assertEquals(
+                initialSize + 1,
+                repository.getMedicalRecords().size()
+        );
+
+        assertTrue(
+                repository.getMedicalRecords()
+                        .contains(record)
+        );
+    }
+
+    @Test
+    void updateMedicalRecordShouldUpdateExistingRecord() {
+
+        MedicalRecord record =
+                createMedicalRecord();
+
+        repository.addMedicalRecord(record);
+
+        MedicalRecord updated =
+                new MedicalRecord();
+
+        updated.setFirstName("Jonathan");
+        updated.setLastName("Test");
+        updated.setBirthdate("02/02/1990");
+
+        updated.setMedications(
+                List.of("newmed:250mg")
+        );
+
+        updated.setAllergies(
+                List.of("shellfish")
+        );
+
+        Optional<MedicalRecord> result =
+                repository.updateMedicalRecord(updated);
+
+        assertTrue(result.isPresent());
+
+        MedicalRecord resultRecord =
+                result.get();
+
+        assertEquals(
+                "Jonathan",
+                resultRecord.getFirstName()
+        );
+
+        assertEquals(
+                "Test",
+                resultRecord.getLastName()
+        );
+
+        assertEquals(
+                "02/02/1990",
+                resultRecord.getBirthdate()
+        );
+
+        assertEquals(
+                List.of("newmed:250mg"),
+                resultRecord.getMedications()
+        );
+
+        assertEquals(
+                List.of("shellfish"),
+                resultRecord.getAllergies()
+        );
+    }
+
+    @Test
+    void updateMedicalRecordShouldReturnEmptyWhenRecordDoesNotExist() {
+
+        MedicalRecord record =
+                createMedicalRecord();
+
+        Optional<MedicalRecord> result =
+                repository.updateMedicalRecord(record);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void deleteMedicalRecordShouldDeleteExistingRecord() {
+
+        MedicalRecord record =
+                createMedicalRecord();
+
+        repository.addMedicalRecord(record);
+
+        boolean deleted =
+                repository.deleteMedicalRecord(
+                        "Jonathan",
+                        "Test"
+                );
+
+        assertTrue(deleted);
+
+        assertTrue(
+                repository.getMedicalRecords()
+                        .stream()
+                        .noneMatch(existing ->
+                                existing.getFirstName()
+                                        .equalsIgnoreCase(
+                                                "Jonathan"
+                                        )
+                                        &&
+                                        existing.getLastName()
+                                                .equalsIgnoreCase(
+                                                        "Test"
+                                                )
+                        )
+        );
+    }
+
+    @Test
+    void deleteMedicalRecordShouldReturnFalseWhenRecordDoesNotExist() {
+
+        boolean deleted =
+                repository.deleteMedicalRecord(
+                        "Unknown",
+                        "Person"
+                );
+
+        assertFalse(deleted);
     }
 }

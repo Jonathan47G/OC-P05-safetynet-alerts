@@ -28,4 +28,10 @@ public interface DataRepository {
     boolean deleteFireStationByAddress(String address);
 
     boolean deleteFireStationsByStation(String stationNumber);
+
+    MedicalRecord addMedicalRecord(MedicalRecord medicalRecord);
+
+    Optional<MedicalRecord> updateMedicalRecord(MedicalRecord medicalRecord);
+
+    boolean deleteMedicalRecord(String firstName, String lastName);
 }
