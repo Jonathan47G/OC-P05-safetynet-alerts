@@ -1,5 +1,6 @@
 package com.safetynet.alerts.repository;
 
+import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.model.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -194,5 +195,105 @@ class JsonDataRepositoryTest {
         person.setEmail("jonathan@test.com");
 
         return person;
+    }
+
+    @Test
+    void addFireStationShouldAddMapping() {
+
+        FireStation fireStation =
+                createFireStation("1 Test St", "5");
+
+        int initialSize =
+                repository.getFirestations().size();
+
+        FireStation result =
+                repository.addFireStation(fireStation);
+
+        assertEquals(fireStation, result);
+
+        assertEquals(
+                initialSize + 1,
+                repository.getFirestations().size()
+        );
+    }
+
+    @Test
+    void updateFireStationShouldUpdateStationNumber() {
+
+        FireStation fireStation =
+                createFireStation("1 Test St", "5");
+
+        repository.addFireStation(fireStation);
+
+        FireStation update =
+                createFireStation("1 Test St", "2");
+
+        Optional<FireStation> result =
+                repository.updateFireStation(update);
+
+        assertTrue(result.isPresent());
+        assertEquals("2", result.get().getStation());
+    }
+
+    @Test
+    void updateFireStationShouldReturnEmptyForUnknownAddress() {
+
+        FireStation update =
+                createFireStation("Unknown", "2");
+
+        assertTrue(
+                repository.updateFireStation(update)
+                        .isEmpty()
+        );
+    }
+
+    @Test
+    void deleteFireStationByAddressShouldDeleteMapping() {
+
+        repository.addFireStation(
+                createFireStation("1 Test St", "5")
+        );
+
+        assertTrue(
+                repository.deleteFireStationByAddress(
+                        "1 Test St"
+                )
+        );
+    }
+
+    @Test
+    void deleteFireStationsByStationShouldDeleteMappings() {
+
+        repository.addFireStation(
+                createFireStation("1 Test St", "99")
+        );
+
+        repository.addFireStation(
+                createFireStation("2 Test St", "99")
+        );
+
+        assertTrue(
+                repository.deleteFireStationsByStation("99")
+        );
+
+        assertTrue(
+                repository.getFirestations()
+                        .stream()
+                        .noneMatch(
+                                fireStation ->
+                                        fireStation.getStation()
+                                                .equals("99")
+                        )
+        );
+    }
+
+    private FireStation createFireStation(
+            String address,
+            String station
+    ) {
+        FireStation fireStation = new FireStation();
+        fireStation.setAddress(address);
+        fireStation.setStation(station);
+        return fireStation;
     }
 }
