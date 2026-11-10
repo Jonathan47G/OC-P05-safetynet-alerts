@@ -40,9 +40,17 @@ class ChildAlertControllerTest {
                 )
         );
 
-        when(childAlertService.getChildrenByAddress(
-                "1509 Culver St"
-        )).thenReturn(List.of(child));
+        when(
+                childAlertService.addressExists(
+                        "1509 Culver St"
+                )
+        ).thenReturn(true);
+
+        when(
+                childAlertService.getChildrenByAddress(
+                        "1509 Culver St"
+                )
+        ).thenReturn(List.of(child));
 
         mockMvc.perform(
                         get("/childAlert")
@@ -70,16 +78,48 @@ class ChildAlertControllerTest {
     }
 
     @Test
-    void getChildAlertShouldReturnEmptyListForUnknownAddress()
+    void getChildAlertShouldReturnEmptyObjectForUnknownAddress()
             throws Exception {
 
-        when(childAlertService.getChildrenByAddress(
-                "Unknown"
-        )).thenReturn(List.of());
+        when(
+                childAlertService.addressExists(
+                        "Unknown"
+                )
+        ).thenReturn(false);
 
         mockMvc.perform(
                         get("/childAlert")
-                                .param("address", "Unknown")
+                                .param(
+                                        "address",
+                                        "Unknown"
+                                )
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("{}"));
+    }
+
+    @Test
+    void getChildAlertShouldReturnEmptyListWhenAddressExistsWithoutChildren()
+            throws Exception {
+
+        when(
+                childAlertService.addressExists(
+                        "Adult Address"
+                )
+        ).thenReturn(true);
+
+        when(
+                childAlertService.getChildrenByAddress(
+                        "Adult Address"
+                )
+        ).thenReturn(List.of());
+
+        mockMvc.perform(
+                        get("/childAlert")
+                                .param(
+                                        "address",
+                                        "Adult Address"
+                                )
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));

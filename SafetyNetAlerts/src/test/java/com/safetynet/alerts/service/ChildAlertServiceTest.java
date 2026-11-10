@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -67,26 +68,50 @@ class ChildAlertServiceTest {
                 .thenReturn(List.of(child, adult));
 
         when(dataRepository.getMedicalRecords())
-                .thenReturn(List.of(childRecord, adultRecord));
+                .thenReturn(List.of(
+                        childRecord,
+                        adultRecord
+                ));
 
-        when(ageCalculator.calculateAge("02/18/2012"))
-                .thenReturn(14);
+        when(
+                ageCalculator.calculateAge(
+                        "02/18/2012"
+                )
+        ).thenReturn(14);
 
-        when(ageCalculator.calculateAge("03/06/1984"))
-                .thenReturn(42);
+        when(
+                ageCalculator.calculateAge(
+                        "03/06/1984"
+                )
+        ).thenReturn(42);
 
         List<ChildAlertDto> result =
                 childAlertService.getChildrenByAddress(
                         "1509 Culver St"
                 );
 
-        assertEquals(1, result.size());
+        assertEquals(
+                1,
+                result.size()
+        );
 
-        ChildAlertDto childResult = result.getFirst();
+        ChildAlertDto childResult =
+                result.getFirst();
 
-        assertEquals("Tenley", childResult.firstName());
-        assertEquals("Boyd", childResult.lastName());
-        assertEquals(14, childResult.age());
+        assertEquals(
+                "Tenley",
+                childResult.firstName()
+        );
+
+        assertEquals(
+                "Boyd",
+                childResult.lastName()
+        );
+
+        assertEquals(
+                14,
+                childResult.age()
+        );
 
         assertEquals(
                 1,
@@ -122,16 +147,26 @@ class ChildAlertServiceTest {
         when(dataRepository.getMedicalRecords())
                 .thenReturn(List.of(record));
 
-        when(ageCalculator.calculateAge("01/01/2008"))
-                .thenReturn(18);
+        when(
+                ageCalculator.calculateAge(
+                        "01/01/2008"
+                )
+        ).thenReturn(18);
 
         List<ChildAlertDto> result =
                 childAlertService.getChildrenByAddress(
                         "1 Test St"
                 );
 
-        assertEquals(1, result.size());
-        assertEquals(18, result.getFirst().age());
+        assertEquals(
+                1,
+                result.size()
+        );
+
+        assertEquals(
+                18,
+                result.getFirst().age()
+        );
     }
 
     @Test
@@ -155,15 +190,20 @@ class ChildAlertServiceTest {
         when(dataRepository.getMedicalRecords())
                 .thenReturn(List.of(record));
 
-        when(ageCalculator.calculateAge("03/06/1984"))
-                .thenReturn(42);
+        when(
+                ageCalculator.calculateAge(
+                        "03/06/1984"
+                )
+        ).thenReturn(42);
 
         List<ChildAlertDto> result =
                 childAlertService.getChildrenByAddress(
                         "1509 Culver St"
                 );
 
-        assertTrue(result.isEmpty());
+        assertTrue(
+                result.isEmpty()
+        );
     }
 
     @Test
@@ -177,7 +217,9 @@ class ChildAlertServiceTest {
                         "Unknown address"
                 );
 
-        assertTrue(result.isEmpty());
+        assertTrue(
+                result.isEmpty()
+        );
     }
 
     @Test
@@ -200,7 +242,69 @@ class ChildAlertServiceTest {
                         "1 Test St"
                 );
 
-        assertTrue(result.isEmpty());
+        assertTrue(
+                result.isEmpty()
+        );
+    }
+
+    @Test
+    void addressExistsShouldReturnTrueWhenAddressExists() {
+
+        Person person = createPerson(
+                "John",
+                "Boyd",
+                "1509 Culver St"
+        );
+
+        when(dataRepository.getPersons())
+                .thenReturn(List.of(person));
+
+        boolean result =
+                childAlertService.addressExists(
+                        "1509 Culver St"
+                );
+
+        assertTrue(result);
+    }
+
+    @Test
+    void addressExistsShouldIgnoreCase() {
+
+        Person person = createPerson(
+                "John",
+                "Boyd",
+                "1509 Culver St"
+        );
+
+        when(dataRepository.getPersons())
+                .thenReturn(List.of(person));
+
+        boolean result =
+                childAlertService.addressExists(
+                        "1509 culver st"
+                );
+
+        assertTrue(result);
+    }
+
+    @Test
+    void addressExistsShouldReturnFalseWhenAddressDoesNotExist() {
+
+        Person person = createPerson(
+                "John",
+                "Boyd",
+                "1509 Culver St"
+        );
+
+        when(dataRepository.getPersons())
+                .thenReturn(List.of(person));
+
+        boolean result =
+                childAlertService.addressExists(
+                        "Unknown"
+                );
+
+        assertFalse(result);
     }
 
     private Person createPerson(
@@ -208,7 +312,9 @@ class ChildAlertServiceTest {
             String lastName,
             String address
     ) {
+
         Person person = new Person();
+
         person.setFirstName(firstName);
         person.setLastName(lastName);
         person.setAddress(address);
@@ -221,7 +327,10 @@ class ChildAlertServiceTest {
             String lastName,
             String birthdate
     ) {
-        MedicalRecord record = new MedicalRecord();
+
+        MedicalRecord record =
+                new MedicalRecord();
+
         record.setFirstName(firstName);
         record.setLastName(lastName);
         record.setBirthdate(birthdate);

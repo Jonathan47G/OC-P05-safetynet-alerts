@@ -4,9 +4,12 @@ import com.safetynet.alerts.dto.FirestationResponseDto;
 import com.safetynet.alerts.service.FirestationAlertService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 public class FirestationAlertController {
@@ -23,7 +26,7 @@ public class FirestationAlertController {
     }
 
     @GetMapping("/firestation")
-    public FirestationResponseDto getFirestation(
+    public ResponseEntity<?> getFirestation(
             @RequestParam String stationNumber
     ) {
 
@@ -37,11 +40,23 @@ public class FirestationAlertController {
                         stationNumber
                 );
 
+        if (response.persons().isEmpty()
+                && response.adultCount() == 0
+                && response.childCount() == 0) {
+
+            logger.info(
+                    "GET /firestation response: no data found for station {}",
+                    stationNumber
+            );
+
+            return ResponseEntity.ok(Map.of());
+        }
+
         logger.info(
                 "GET /firestation response: {}",
                 response
         );
 
-        return response;
+        return ResponseEntity.ok(response);
     }
 }

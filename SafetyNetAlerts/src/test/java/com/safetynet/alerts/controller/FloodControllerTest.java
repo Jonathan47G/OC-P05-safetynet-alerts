@@ -106,4 +106,23 @@ class FloodControllerTest {
                 )
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void getFloodStationsShouldReturnEmptyObjectForUnknownStation()
+            throws Exception {
+
+        when(
+                floodService.getHouseholdsByStations(
+                        List.of("999")
+                )
+        ).thenReturn(List.of());
+
+        mockMvc.perform(
+                        get("/flood/stations")
+                                .param("stations", "999")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("{}"));
+    }
+
 }

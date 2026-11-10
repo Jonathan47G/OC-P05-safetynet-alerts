@@ -133,4 +133,14 @@ public class ChildAlertService {
                 first.getLastName()
                         .equalsIgnoreCase(second.getLastName());
     }
+    public boolean addressExists(String address) {
+
+        return dataRepository.getPersons()
+                .stream()
+                .anyMatch(person ->
+                        person.getAddress()
+                                .equalsIgnoreCase(address)
+                );
+    }
+
 }
