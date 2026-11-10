@@ -114,4 +114,56 @@ public class JsonDataRepository implements DataRepository {
                                 person.getLastName().equalsIgnoreCase(lastName)
                 );
     }
+
+    @Override
+    public FireStation addFireStation(FireStation fireStation) {
+        data.getFirestations().add(fireStation);
+        return fireStation;
+    }
+
+    @Override
+    public Optional<FireStation> updateFireStation(
+            FireStation updatedFireStation
+    ) {
+
+        return data.getFirestations()
+                .stream()
+                .filter(fireStation ->
+                        fireStation.getAddress()
+                                .equalsIgnoreCase(
+                                        updatedFireStation.getAddress()
+                                )
+                )
+                .findFirst()
+                .map(fireStation -> {
+
+                    fireStation.setStation(
+                            updatedFireStation.getStation()
+                    );
+
+                    return fireStation;
+                });
+    }
+
+    @Override
+    public boolean deleteFireStationByAddress(String address) {
+
+        return data.getFirestations()
+                .removeIf(fireStation ->
+                        fireStation.getAddress()
+                                .equalsIgnoreCase(address)
+                );
+    }
+
+    @Override
+    public boolean deleteFireStationsByStation(
+            String stationNumber
+    ) {
+
+        return data.getFirestations()
+                .removeIf(fireStation ->
+                        fireStation.getStation()
+                                .equals(stationNumber)
+                );
+    }
 }

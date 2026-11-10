@@ -20,4 +20,12 @@ public interface DataRepository {
     Optional<Person> updatePerson(Person person);
 
     boolean deletePerson(String firstName, String lastName);
+
+    FireStation addFireStation(FireStation fireStation);
+
+    Optional<FireStation> updateFireStation(FireStation fireStation);
+
+    boolean deleteFireStationByAddress(String address);
+
+    boolean deleteFireStationsByStation(String stationNumber);
 }
